@@ -15,4 +15,4 @@ settings = get_settings()
 @limiter.limit("100/second")
 @cached
 async def get_example(request: Request, _auth=Depends(cookie_scheme)) -> list[str]:
-    return []
+    return ['example']

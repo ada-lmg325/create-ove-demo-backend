@@ -1,4 +1,4 @@
-from typing import Optional, Type, Container
+from typing import Type, Container
 
 from sqlalchemy import inspect
 from sqlalchemy.orm import ColumnProperty

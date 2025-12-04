@@ -7,9 +7,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, FastAPI, Response, HTTPException
 
+import asyncio
+
 from app.app import app
 from app.db import configure_db
-from app.api.v1.endpoints import example
+from app.api.v1.endpoints import example, ships
 from app.core.auth import configure_auth
 from app.core.config import get_settings
 from app.core.cors import configure_cors
@@ -30,15 +32,22 @@ configure_limiter()
 configure_cors()
 configure_metrics()
 configure_auth()
-configure_db()
 configure_schemas()
+
+
+@app.on_event("startup")
+async def db_startup():
+    await configure_db()
 
 configure_sockets(app)
 configure_templates(app)
 
 configure_v1_namespace()
 
-app.include_router(example.router, prefix=f"/api/v1", tags=["example"])  # TODO: replace
+app.include_router(example.router, prefix=f"/api/v1",
+                   tags=["example"])
+app.include_router(ships.router, prefix=f"/api/v1",
+                   tags=["ships"])
 
 
 # noinspection PyUnusedLocal
@@ -63,7 +72,8 @@ async def get_env(request: Request):
     return Response(payload, media_type="application/javascript")
 
 
-app.mount("/asyncapi", StaticFiles(directory=settings.asyncapi_dir), name="asyncapi")
+app.mount("/asyncapi", StaticFiles(directory=settings.asyncapi_dir),
+          name="asyncapi")
 
 
 @app.get("/{full_path:path}")
@@ -88,7 +98,8 @@ def use_route_names_as_operation_ids(app_: FastAPI) -> None:
     for route in app_.routes:
         if isinstance(route, APIRoute):
             if route.path.startswith("/api/v"):
-                route.operation_id = route.name + f"_v{route.path.split("/")[2][1:]}"
+                route.operation_id = route.name + \
+                    f"_v{route.path.split("/")[2][1:]}"
             else:
                 route.operation_id = route.name  # in this case, 'read_items'
 
