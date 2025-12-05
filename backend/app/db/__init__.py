@@ -8,6 +8,7 @@ from app.core.logger import logger
 
 async def configure_db():
     if aiosqlite is not None:
+        # TODO: Redo this so that it uses the existing db
         db_name = 'create-ove-demo.db'
         path_name = './data/cruise_ship_info.csv'
         table_name = 'cruise_ship'
@@ -15,7 +16,6 @@ async def configure_db():
         await load_from_csv(db_name, table_name, path_name)
 
 
-# TODO: Handle async nature of create_db and load_from_csv
 async def create_db(db_name, table_name):
     # Connect to the SQLite database (creates file if it doesn't exist)
     async with aiosqlite.connect(db_name) as db:

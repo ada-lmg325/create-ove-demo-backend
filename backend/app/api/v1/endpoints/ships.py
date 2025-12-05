@@ -10,8 +10,6 @@ from app.db.fetchers.ship import get_ships_db, get_ship_db
 
 from schemas.ship import CruiseShip, CruiseShipQueryParams
 
-from app.core.logger import logger
-
 router = APIRouter()
 settings = get_settings()
 
