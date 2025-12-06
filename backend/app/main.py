@@ -33,11 +33,7 @@ configure_cors()
 configure_metrics()
 configure_auth()
 configure_schemas()
-
-
-@app.on_event("startup")
-async def db_startup():
-    await configure_db()
+configure_db()
 
 configure_sockets(app)
 configure_templates(app)

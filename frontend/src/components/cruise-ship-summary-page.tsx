@@ -16,7 +16,7 @@ export function CruiseShipSummaryPage({ id }: CruiseShipSummaryPageProps) {
     navigate({ to: "/" });
   };
   return cruiseShip ? (
-    <div className="bg-white p-4">
+    <div className="bg-white p-4 text-black">
       <div className="flex w-full items-start justify-between">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">
@@ -65,7 +65,7 @@ export function CruiseShipSummaryPage({ id }: CruiseShipSummaryPageProps) {
           />
           <div className="grid grid-cols-1 gap-4">
             <Ranking
-              label={`Length: ${cruiseShip.length} meters`}
+              label={`Length: ${cruiseShip.length} feet`}
               rank={cruiseShip.meta.rank.length}
               total={cruiseShip.meta.total}
             />

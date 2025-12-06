@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from fastapi import APIRouter, Request, Depends, HTTPException
+from app.core.logger import logger
 
 from app.core.auth import cookie_scheme
 from app.core.cache import cached
@@ -26,7 +27,8 @@ async def get_ships(
         return get_ships_db(params)
     except HTTPException as e:
         raise e
-    except Exception:
+    except Exception as e:
+        logger.info(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

@@ -6,7 +6,7 @@ import { CruiseShipTable } from "./cruise-ship-table";
 export const CruiseShipPage = () => {
   const { data: ships, loading } = getCruiseShips("/ships");
   return !loading && ships ? (
-    <div className="flex w-full flex-col gap-6 bg-white">
+    <div className="flex w-full flex-col gap-6 bg-white text-black">
       <h1 className="text-4xl font-bold tracking-tight">Cruise Ships</h1>
       <Tabs defaultValue="directory">
         <TabsList>

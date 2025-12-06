@@ -13,6 +13,7 @@ class CruiseShip(BaseModel):
     cabins: float
     passenger_density: float
     crew: float
+    meta: Optional[object] = None
 
 
 class CruiseShipQueryParams(BaseModel):

@@ -15,7 +15,7 @@ function ordinal(n: number): string {
 
 export const Ranking = ({ label, rank, total }: RankingProps) => {
   return (
-    <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+    <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-4 text-black shadow-md">
       <h2 className="text-lg font-semibold text-gray-700">{label}</h2>
       <Gauge
         value={Math.ceil((rank / total) * 100)}

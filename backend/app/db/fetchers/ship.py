@@ -1,8 +1,9 @@
 from app.db.models import CruiseShip
 from schemas.ship import CruiseShipQueryParams
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func, text
 from app.core.logger import logger
+import pandas as pd
 
 
 def get_ships_db(params: CruiseShipQueryParams = None):
@@ -19,13 +20,87 @@ def get_ships_db(params: CruiseShipQueryParams = None):
 
 def get_ship_db(id):
     Session = create_session()
+
+    numeric_cols = [
+        "age",
+        "tonnage",
+        "passengers",
+        "length",
+        "cabins",
+        "passenger_density",
+        "crew",
+    ]
+
     with Session() as session:
-        return session.query(CruiseShip).filter_by(id=id).first()
+
+        rank_exprs = [
+            func.rank().over(order_by=getattr(
+                CruiseShip, col).desc()).label(f"{col}_rank")
+            for col in numeric_cols
+        ]
+
+        total_rows_expr = func.count(CruiseShip.id).over().label("total_rows")
+
+        subquery = (
+            session.query(CruiseShip, *rank_exprs, total_rows_expr)
+            .subquery()
+        )
+        res = session.query(subquery).filter_by(id=id).first()
+        if res:
+            return {
+                "id": res.id,
+                "name": res.name,
+                "line": res.line,
+                "age": res.age,
+                "tonnage": res.tonnage,
+                "passengers": res.passengers,
+                "length": res.length,
+                "cabins": res.cabins,
+                "passenger_density": res.passenger_density,
+                "crew": res.crew,
+                "meta": {
+                    "rank": {
+                        "age": res.age_rank,
+                        "tonnage": res.tonnage_rank,
+                        "passengers": res.passengers_rank,
+                        "length": res.length_rank,
+                        "cabins": res.cabins_rank,
+                        "passenger_density": res.passenger_density_rank,
+                        "crew": res.crew_rank
+                    },
+                    "total": res.total_rows
+                }
+            }
+        else:
+            return None
+
+
+def load_data_from_csv():
+    path_name = './data/cruise_ship_info.csv'
+    df = pd.read_csv(path_name)
+    df.rename(columns={
+        "Ship_name": "name",
+        "Cruise_line": "line",
+        "Age": 'age',
+        "Tonnage": 'tonnage'
+    }, inplace=True)
+    logger.info(df.head())
+    objects = [
+        CruiseShip(**row.to_dict())
+        for _, row in df.iterrows()
+    ]
+    Session = create_session()
+    with Session() as session:
+
+        session.execute(text("DELETE FROM cruise_ship"))
+        session.commit()
+
+        session.add_all(objects)
+        session.commit()
 
 
 def create_session():
-    # TODO: Consider using db settings for this
-    db_name = 'create-ove-demo.db'
-    engine = create_engine(f"sqlite:///{db_name}", echo=True)
+    db_name = './data/main.db'
+    engine = create_engine(f"sqlite:///{db_name}", echo=False)
     Session = sessionmaker(bind=engine)
     return Session
