@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction } from "react";
 export type DropdownProps = {
   label: string;
   options: string[];
-  currVal: string;
+  currVal: string | null;
   onSelect: Dispatch<SetStateAction<any>>;
 };
 
@@ -21,7 +21,7 @@ export function Dropdown({ currVal, label, options, onSelect }: DropdownProps) {
   return (
     <Select onValueChange={onSelect}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={formatString(currVal)} />
+        <SelectValue placeholder={currVal ? formatString(currVal) : label} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

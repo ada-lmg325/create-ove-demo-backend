@@ -12,8 +12,26 @@ def get_ships_db(params: CruiseShipQueryParams = None):
         query = session.query(CruiseShip)
         filters = params.dict(exclude_none=True)
         for col, val in filters.items():
+            min = False
+            max = False
+            if ("min_" in col):
+                min = True
+                col = col.replace("min_", "")
+
+            if ("max_" in col):
+                max = True
+                col = col.replace("max_", "")
+
             col_obj = getattr(CruiseShip, col)
-            query = query.filter(col_obj == val)
+            if (min):
+                logger.info("In min")
+                query = query.filter(col_obj >= val)
+            elif (max):
+                logger.info("In max")
+                query = query.filter(col_obj <= val)
+            else:
+                logger.info("In Else")
+                query = query.filter(col_obj == val)
 
         return query.all()
 
