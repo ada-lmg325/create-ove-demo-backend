@@ -1,16 +1,15 @@
-import { CruiseShip } from "@/interfaces/cruise-ship";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "./dropdown";
 import { SliderFilter } from "./slider-filter";
 import { Button } from "./ui/button";
 
 export type FiltersProps = {
-  data: CruiseShip[];
+  filterOptions;
   filterState;
   setFilterState;
 };
 export const Filters = ({
-  data,
+  filterOptions,
   filterState,
   setFilterState,
 }: FiltersProps) => {
@@ -37,30 +36,8 @@ export const Filters = ({
     setCurrFilterState(filterState);
   }, [filterState]);
 
-  const filterOptions = useMemo(() => {
-    return {
-      line: [...new Set(data.map((ship) => ship.line))],
-      min_tonnage: Math.min(...data.map((ship) => ship.tonnage)),
-      max_tonnage: Math.max(...data.map((ship) => ship.tonnage)),
-      min_age: Math.min(...data.map((ship) => ship.age)),
-      max_age: Math.max(...data.map((ship) => ship.age)),
-      min_crew: Math.min(...data.map((ship) => ship.crew)),
-      max_crew: Math.max(...data.map((ship) => ship.crew)),
-      min_length: Math.min(...data.map((ship) => ship.length)),
-      max_length: Math.max(...data.map((ship) => ship.length)),
-      min_passengers: Math.min(...data.map((ship) => ship.passengers)),
-      max_passengers: Math.max(...data.map((ship) => ship.passengers)),
-      min_passenger_density: Math.min(
-        ...data.map((ship) => ship.passenger_density)
-      ),
-      max_passenger_density: Math.max(
-        ...data.map((ship) => ship.passenger_density)
-      ),
-    };
-  }, [data]);
-
   const [open, setOpen] = useState(false);
-  return data ? (
+  return filterOptions ? (
     <div>
       <div className="flex gap-1">
         <h2 className="text-2xl font-bold tracking-tight">Filters</h2>
@@ -70,7 +47,7 @@ export const Filters = ({
       </div>
       {open ? (
         <>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap">
             <div className="m-8 min-w-[200px]">
               <h3>Cruise Line</h3>
               <div className="m-2">
@@ -78,11 +55,11 @@ export const Filters = ({
                   onSelect={(val) =>
                     setCurrFilterState((currFilterState) => ({
                       ...currFilterState,
-                      line: val,
+                      line: val === "All" ? null : val,
                     }))
                   }
                   label="Cruise Line"
-                  options={filterOptions.line}
+                  options={["All", ...filterOptions.line]}
                   currVal={currFilterState.line}
                 />
               </div>

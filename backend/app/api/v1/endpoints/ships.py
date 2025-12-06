@@ -9,20 +9,20 @@ from app.core.config import get_settings
 from app.core.rate_limiter import limiter
 from app.db.fetchers.ship import get_ships_db, get_ship_db, load_data_from_csv
 
-from schemas.ship import CruiseShip, CruiseShipQueryParams, RefreshResponse
+from schemas.ship import CruiseShip, CruiseShipQueryParams, RefreshResponse, CruiseShipsResponse
 
 router = APIRouter()
 settings = get_settings()
 
 
-@router.get("/ships", response_model=list[CruiseShip])
+@router.get("/ships", response_model=CruiseShipsResponse)
 @limiter.limit("100/second")
 @cached
 async def get_ships(
         request: Request,
         params: CruiseShipQueryParams = Depends(),
         _auth=Depends(cookie_scheme)
-) -> list[CruiseShip]:
+) -> CruiseShipsResponse:
     try:
         return get_ships_db(params)
     except HTTPException as e:

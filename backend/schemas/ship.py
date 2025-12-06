@@ -16,6 +16,11 @@ class CruiseShip(BaseModel):
     meta: Optional[object] = None
 
 
+class CruiseShipsResponse(BaseModel):
+    ships: list[CruiseShip]
+    meta: Optional[object] = None
+
+
 class CruiseShipQueryParams(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None

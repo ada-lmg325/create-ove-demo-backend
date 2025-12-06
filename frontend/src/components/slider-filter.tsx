@@ -3,7 +3,7 @@ import { Slider } from "./ui/slider";
 export type SliderFilterProps = {
   min_option: number;
   max_option: number;
-  currVals: (number | null)[];
+  currVals: (number | undefined)[];
   //TODO: Add a better type here
   setCurrVals: (val: any) => void;
   label: string;
@@ -16,7 +16,7 @@ export const SliderFilter = ({
   label,
 }: SliderFilterProps) => {
   return (
-    <div className="m-8 min-w-[200px]">
+    <div className="m-5 min-w-[200px]">
       <h3>{label}</h3>
       <div className="m-2 w-[100%]">
         <Slider

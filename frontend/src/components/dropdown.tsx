@@ -18,10 +18,11 @@ export type DropdownProps = {
 };
 
 export function Dropdown({ currVal, label, options, onSelect }: DropdownProps) {
+  console.log(currVal);
   return (
-    <Select onValueChange={onSelect}>
+    <Select onValueChange={onSelect} value={currVal ?? "All"}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={currVal ? formatString(currVal) : label} />
+        <SelectValue placeholder={label} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

@@ -36,32 +36,32 @@ export const CruiseShipPage = () => {
     max_passenger_density: null,
   });
 
-  const { data: ships, loading } = getCruiseShips("/ships", filterState);
+  const { data, loading } = getCruiseShips("/ships", filterState);
 
-  return !loading && ships ? (
+  return (
     <div className="flex w-full flex-col gap-6 bg-white text-black">
       <h1 className="text-4xl font-bold tracking-tight">Cruise Ships</h1>
       <Filters
-        data={ships}
+        filterOptions={data?.meta?.filters}
         filterState={filterState}
         setFilterState={setFilterState}
       />
-      <Tabs defaultValue="directory">
-        <TabsList>
-          <TabsTrigger value="directory">Cruise Ship Directory</TabsTrigger>
-          <TabsTrigger value="lines">Cruise Lines</TabsTrigger>
-        </TabsList>
-        <TabsContent value="directory">
-          <CruiseShipTable ships={ships} />
-        </TabsContent>
-        <TabsContent value="lines">
-          <CruiseLineSummary ships={ships} />
-        </TabsContent>
-      </Tabs>
-    </div>
-  ) : (
-    <div>
-      <span>No Data Available</span>
+      {!loading && data ? (
+        <Tabs defaultValue="directory">
+          <TabsList>
+            <TabsTrigger value="directory">Cruise Ship Directory</TabsTrigger>
+            <TabsTrigger value="lines">Cruise Lines</TabsTrigger>
+          </TabsList>
+          <TabsContent value="directory">
+            <CruiseShipTable ships={data.ships} />
+          </TabsContent>
+          <TabsContent value="lines">
+            <CruiseLineSummary ships={data.ships} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <span>No Data Available</span>
+      )}
     </div>
   );
 };
