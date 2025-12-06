@@ -8,9 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CruiseShip } from "@/interfaces/cruise-ship";
-import { getData } from "@/service-functions/get-data";
-import { useEffect, useMemo, useState } from "react";
-import { CruiseShipModal } from "./cruise-ship-modal";
+import { useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { Button } from "./ui/button";
 
 export type CruiseShipTableProps = {
@@ -22,19 +21,12 @@ export function CruiseShipTable({
   pageSize = 10,
 }: CruiseShipTableProps) {
   const [page, setPage] = useState(1);
-  const [selectedShip, setSelectedShip] = useState<CruiseShip | undefined>();
-  const [open, setOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | undefined>();
 
-  //TODO: Extract into custom hook
-  useEffect(() => {
-    if (selectedId) {
-      getData(`/ships/${selectedId}`).then((res) => {
-        console.log(res);
-        setSelectedShip(res.data);
-      });
-    }
-  }, [selectedId]);
+  const navigate = useNavigate();
+
+  const handleNavigate = (id: number) => {
+    navigate({ to: "/ship/$id", params: { id: id.toString() } });
+  };
 
   const totalPages = useMemo(
     () => Math.ceil(ships.length / pageSize),
@@ -47,11 +39,6 @@ export function CruiseShipTable({
   );
   return (
     <>
-      <CruiseShipModal
-        open={open}
-        setOpen={setOpen}
-        cruiseShip={selectedShip}
-      />
       <Table>
         <TableCaption>Cruise Ship Directory</TableCaption>
         <TableHeader>
@@ -81,12 +68,7 @@ export function CruiseShipTable({
               <TableCell>{ship.tonnage}</TableCell>
               <TableCell>
                 {
-                  <Button
-                    onClick={() => {
-                      setOpen(true);
-                      setSelectedId(ship.id);
-                    }}
-                  >
+                  <Button onClick={() => handleNavigate(ship.id)}>
                     View Details
                   </Button>
                 }

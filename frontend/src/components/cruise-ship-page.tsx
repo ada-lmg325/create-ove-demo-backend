@@ -7,7 +7,7 @@ export const CruiseShipPage = () => {
   const { data: ships, loading } = getCruiseShips("/ships");
   return !loading && ships ? (
     <div className="flex w-full flex-col gap-6 bg-white">
-      <h1>Cruise Ships</h1>
+      <h1 className="text-4xl font-bold tracking-tight">Cruise Ships</h1>
       <Tabs defaultValue="directory">
         <TabsList>
           <TabsTrigger value="directory">Cruise Ship Directory</TabsTrigger>

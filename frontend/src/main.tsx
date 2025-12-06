@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@/components/theme-provider.tsx";
 import reportWebVitals from "@/reportWebVitals.ts";
 import IndexRoute from "@/routes/index/index.tsx";
+import ShipRoute from "@/routes/ship/ship.tsx";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   createRootRoute,
@@ -49,7 +50,10 @@ const rootRoute = createRootRoute({
   ),
 });
 
-const routeTree = rootRoute.addChildren([IndexRoute(rootRoute)]);
+const routeTree = rootRoute.addChildren([
+  ShipRoute(rootRoute),
+  IndexRoute(rootRoute),
+]);
 
 const router = createRouter({
   routeTree,
