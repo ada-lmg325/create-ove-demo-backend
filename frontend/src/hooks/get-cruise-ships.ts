@@ -1,14 +1,12 @@
-import { env } from "@/env.ts";
-import axios from "axios";
+import { getData } from "@/service-functions/get-data";
 import { useEffect, useState } from "react";
 
-export const getData = (route: string) => {
+export const getCruiseShips = (route: string) => {
   const [data, setData] = useState<any>();
   const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(env.VITE_SOCKET_SERVER + "/api/v1" + route)
+    getData(route)
       .then((res) => {
         setData(res.data);
         setLoading(false);

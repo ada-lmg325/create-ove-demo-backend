@@ -1,10 +1,9 @@
 import type { RootRoute } from "@tanstack/react-router";
 import { createRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Card } from "@/components/ui/card";
 
-import { socket } from "@/lib/sockets";
 import { CruiseShipPage } from "@/components/cruise-ship-page";
+import { socket } from "@/lib/sockets";
 
 export const IndexPage = () => {
   useEffect(() => {
@@ -13,8 +12,8 @@ export const IndexPage = () => {
   }, []);
 
   return (
-    <main className="h-screen w-screen overflow-hidden bg-[#080929]">
-      <CruiseShipPage/>
+    <main className="min-h-screen w-screen overflow-auto bg-[#080929]">
+      <CruiseShipPage />
     </main>
   );
 };

@@ -7,22 +7,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { CruiseShip } from "@/interfaces/cruise-ship";
+import { getData } from "@/service-functions/get-data";
+import { useEffect, useMemo, useState } from "react";
+import { CruiseShipModal } from "./cruise-ship-modal";
 import { Button } from "./ui/button";
 
 export type CruiseShipTableProps = {
-  ships: any;
-  pageSize: number;
+  ships: CruiseShip[];
+  pageSize?: number;
 };
 export function CruiseShipTable({
   ships,
   pageSize = 10,
 }: CruiseShipTableProps) {
   const [page, setPage] = useState(1);
+  const [selectedShip, setSelectedShip] = useState<CruiseShip | undefined>();
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | undefined>();
+
+  //TODO: Extract into custom hook
+  useEffect(() => {
+    if (selectedId) {
+      getData(`/ships/${selectedId}`).then((res) => {
+        console.log(res);
+        setSelectedShip(res.data);
+      });
+    }
+  }, [selectedId]);
 
   const totalPages = useMemo(
     () => Math.ceil(ships.length / pageSize),
-    [ships.pageSize]
+    [ships, pageSize]
   );
 
   const paginatedShips = useMemo(
@@ -31,6 +47,11 @@ export function CruiseShipTable({
   );
   return (
     <>
+      <CruiseShipModal
+        open={open}
+        setOpen={setOpen}
+        cruiseShip={selectedShip}
+      />
       <Table>
         <TableCaption>Cruise Ship Directory</TableCaption>
         <TableHeader>
@@ -58,7 +79,18 @@ export function CruiseShipTable({
               <TableCell>{ship.passenger_density}</TableCell>
               <TableCell>{ship.passengers}</TableCell>
               <TableCell>{ship.tonnage}</TableCell>
-              <TableCell>{<Button>View Details</Button>}</TableCell>
+              <TableCell>
+                {
+                  <Button
+                    onClick={() => {
+                      setOpen(true);
+                      setSelectedId(ship.id);
+                    }}
+                  >
+                    View Details
+                  </Button>
+                }
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
