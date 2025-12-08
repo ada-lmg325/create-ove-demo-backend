@@ -59,7 +59,7 @@ export const Filters = ({
         <div className="flex flex-wrap">
           <div className="m-8 min-w-[200px]">
             <h3>Cruise Line</h3>
-            <div className="m-2">
+            <div>
               <Dropdown
                 onSelect={(val) =>
                   setCurrFilterState((currFilterState) => ({
