@@ -8,8 +8,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CruiseShip } from "@/interfaces/cruise-ship";
+import { numberFormatter } from "@/utils/number-formatter";
 import { useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "./ui/button";
 
 export type CruiseShipTableProps = {
@@ -29,15 +30,20 @@ export function CruiseShipTable({
   };
 
   const totalPages = useMemo(
-    () => Math.ceil(ships.length / pageSize),
+    () => Math.ceil(ships?.length / pageSize),
     [ships, pageSize]
   );
 
   const paginatedShips = useMemo(
-    () => ships.slice((page - 1) * pageSize, page * pageSize),
-    [page, pageSize]
+    () => (ships ?? []).slice((page - 1) * pageSize, page * pageSize),
+    [ships, page, pageSize]
   );
-  return (
+
+  useEffect(() => {
+    setPage(1);
+  }, [ships]);
+
+  return paginatedShips ? (
     <>
       <Table>
         <TableCaption>Cruise Ship Directory</TableCaption>
@@ -46,12 +52,12 @@ export function CruiseShipTable({
             <TableHead>Name</TableHead>
             <TableHead>Line</TableHead>
             <TableHead>Crew</TableHead>
-            <TableHead>Length</TableHead>
+            <TableHead>Length (feet)</TableHead>
             <TableHead>Cabins</TableHead>
-            <TableHead>Age</TableHead>
-            <TableHead>Passenger Density</TableHead>
+            <TableHead>Age (years)</TableHead>
+            <TableHead>Passenger Density (GT / Pass)</TableHead>
             <TableHead>Passengers</TableHead>
-            <TableHead>Tonnage</TableHead>
+            <TableHead>Tonnage (GT)</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,13 +65,13 @@ export function CruiseShipTable({
             <TableRow key={ship.id}>
               <TableCell>{ship.name}</TableCell>
               <TableCell>{ship.line}</TableCell>
-              <TableCell>{ship.crew}</TableCell>
-              <TableCell>{ship.length}</TableCell>
-              <TableCell>{ship.cabins}</TableCell>
-              <TableCell>{ship.age}</TableCell>
-              <TableCell>{ship.passenger_density}</TableCell>
-              <TableCell>{ship.passengers}</TableCell>
-              <TableCell>{ship.tonnage}</TableCell>
+              <TableCell>{numberFormatter(ship.crew)}</TableCell>
+              <TableCell>{numberFormatter(ship.length)}</TableCell>
+              <TableCell>{numberFormatter(ship.cabins)}</TableCell>
+              <TableCell>{numberFormatter(ship.age)}</TableCell>
+              <TableCell>{numberFormatter(ship.passenger_density)}</TableCell>
+              <TableCell>{numberFormatter(ship.passengers)}</TableCell>
+              <TableCell>{numberFormatter(ship.tonnage)}</TableCell>
               <TableCell>
                 {
                   <Button onClick={() => handleNavigate(ship.id)}>
@@ -92,5 +98,7 @@ export function CruiseShipTable({
         </Button>
       </div>
     </>
+  ) : (
+    <span>No Data Available</span>
   );
 }

@@ -4,6 +4,7 @@ export type RankingProps = {
   label: string;
   rank: number;
   total: number;
+  ascending?: boolean;
 };
 
 function ordinal(n: number): string {
@@ -13,13 +14,26 @@ function ordinal(n: number): string {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
-export const Ranking = ({ label, rank, total }: RankingProps) => {
+export const Ranking = ({
+  label,
+  rank,
+  total,
+  ascending = false,
+}: RankingProps) => {
   return (
     <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-4 text-black shadow-md">
       <h2 className="text-lg font-semibold text-gray-700">{label}</h2>
       <Gauge
-        value={Math.ceil((rank / total) * 100)}
-        label={`${ordinal(rank)} of ${total} ships`}
+        value={
+          ascending
+            ? Math.ceil((rank / total) * 100)
+            : 100 - Math.floor((rank / total) * 100)
+        }
+        label={
+          ascending
+            ? `${ordinal(total - rank + 1)} of ${total} ships`
+            : `${ordinal(rank)} of ${total} ships`
+        }
       />
     </div>
   );
