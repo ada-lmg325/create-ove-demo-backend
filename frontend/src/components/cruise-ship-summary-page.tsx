@@ -36,7 +36,7 @@ export function CruiseShipSummaryPage({ id }: CruiseShipSummaryPageProps) {
             total={cruiseShip.meta.total}
           />
           <Ranking
-            label={`Tonnage: ${cruiseShip.tonnage} tonnes`}
+            label={`Tonnage: ${cruiseShip.tonnage} Gross Tonnage`}
             rank={cruiseShip.meta.rank.tonnage}
             total={cruiseShip.meta.total}
           />

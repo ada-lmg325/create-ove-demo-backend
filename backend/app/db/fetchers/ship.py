@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from app.db.models import CruiseShip
 from schemas.ship import CruiseShipQueryParams
 from sqlalchemy.orm import sessionmaker
@@ -12,10 +13,31 @@ def get_ships_db(params: CruiseShipQueryParams = None):
         query = session.query(CruiseShip)
         filters = params.dict(exclude_none=True)
         for col, val in filters.items():
-            col_obj = getattr(CruiseShip, col)
-            query = query.filter(col_obj == val)
+            min = False
+            max = False
+            if ("min_" in col):
+                min = True
+                col = col.replace("min_", "")
 
-        return query.all()
+            if ("max_" in col):
+                max = True
+                col = col.replace("max_", "")
+
+            col_obj = getattr(CruiseShip, col)
+            if (min):
+                logger.info("In min")
+                query = query.filter(col_obj >= val)
+            elif (max):
+                logger.info("In max")
+                query = query.filter(col_obj <= val)
+            else:
+                logger.info("In Else")
+                query = query.filter(col_obj == val)
+
+        return {
+            "ships": query.all(), "meta": {
+                "filters": get_filter_values(session)
+            }}
 
 
 def get_ship_db(id):
@@ -97,6 +119,38 @@ def load_data_from_csv():
 
         session.add_all(objects)
         session.commit()
+
+
+def get_filter_values(session):
+    numeric_cols = [
+        "age",
+        "tonnage",
+        "passengers",
+        "length",
+        "cabins",
+        "passenger_density",
+        "crew",
+    ]
+    aggregates = []
+    for col_name in numeric_cols:
+        col = getattr(CruiseShip, col_name)
+        aggregates.append(func.min(col).label(f"{col_name}_min"))
+        aggregates.append(func.max(col).label(f"{col_name}_max"))
+
+    row = session.query(*aggregates).one()
+
+    result = {}
+    for col_name in numeric_cols:
+        min = getattr(row, f"{col_name}_min")
+        max = getattr(row, f"{col_name}_max")
+        result["min_" + col_name] = min
+        result["max_" + col_name] = max
+
+    col = getattr(CruiseShip, col_name)
+    result["line"] = [val for (val,) in session.query(
+        CruiseShip.line).distinct().all()]
+
+    return result
 
 
 def create_session():

@@ -7,22 +7,22 @@ from app.core.auth import cookie_scheme
 from app.core.cache import cached
 from app.core.config import get_settings
 from app.core.rate_limiter import limiter
-from app.db.fetchers.ship import get_ships_db, get_ship_db
+from app.db.fetchers.ship import get_ships_db, get_ship_db, load_data_from_csv
 
-from schemas.ship import CruiseShip, CruiseShipQueryParams
+from schemas.ship import CruiseShip, CruiseShipQueryParams, RefreshResponse, CruiseShipsResponse
 
 router = APIRouter()
 settings = get_settings()
 
 
-@router.get("/ships", response_model=list[CruiseShip])
+@router.get("/ships", response_model=CruiseShipsResponse)
 @limiter.limit("100/second")
 @cached
 async def get_ships(
         request: Request,
         params: CruiseShipQueryParams = Depends(),
         _auth=Depends(cookie_scheme)
-) -> list[CruiseShip]:
+) -> CruiseShipsResponse:
     try:
         return get_ships_db(params)
     except HTTPException as e:
@@ -46,4 +46,18 @@ async def get_ship(
     except HTTPException as e:
         raise e
     except Exception:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.post("/refresh", response_model=RefreshResponse)
+@limiter.limit("10/second")
+@cached
+async def refresh_data(
+        request: Request,
+        _auth=Depends(cookie_scheme)) -> RefreshResponse:
+    try:
+        load_data_from_csv()
+        return {"success": True}
+    except Exception as e:
+        logger.info(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
