@@ -20,11 +20,26 @@ const val_opts: val_options[] = [
   "crew",
 ];
 
+type OptDisplay = Record<string, string>;
+
+const opt_display: OptDisplay = {
+  age: "Age (years)",
+  tonnage: "Tonnage (GT)",
+  passengers: "Passengers",
+  length: "Length (feet)",
+  cabins: "Cabins",
+  passenger_density: "Passenger Density (GT / Passenger)",
+  crew: "Crew",
+};
+
 //TODO: Redo the typing of this component to avoid all of the type casting
 export const CruiseLineSummary = ({ ships }: CruiseLineSummaryProps) => {
   const [selectedValue, setSelectedValue] = useState<val_options>("tonnage");
   const [mode, setMode] = useState("average");
   const data = useMemo(() => {
+    if (!ships) {
+      return [];
+    }
     const shipData = ships.reduce((acc: Record<string, any>, ship) => {
       if (acc[ship.line]) {
         acc[ship.line].value += ship[selectedValue as keyof CruiseShip];
@@ -78,15 +93,16 @@ export const CruiseLineSummary = ({ ships }: CruiseLineSummaryProps) => {
           />
           <YAxis
             label={{
-              value: selectedValue as string,
+              value: opt_display[selectedValue as keyof OptDisplay] as string,
               angle: -90,
               position: "insideLeft",
+              offset: -10,
             }}
           />
         </BarChart>
       </ResponsiveContainer>
     </div>
   ) : (
-    <></>
+    <span>No Data Available</span>
   );
 };

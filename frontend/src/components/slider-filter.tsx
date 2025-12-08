@@ -3,7 +3,7 @@ import { Slider } from "./ui/slider";
 export type SliderFilterProps = {
   min_option: number;
   max_option: number;
-  currVals: (number | undefined)[];
+  currVals: (number | null)[];
   //TODO: Add a better type here
   setCurrVals: (val: any) => void;
   label: string;

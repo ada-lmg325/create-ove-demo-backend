@@ -1,4 +1,3 @@
-from sqlalchemy import func
 from app.db.models import CruiseShip
 from schemas.ship import CruiseShipQueryParams
 from sqlalchemy.orm import sessionmaker
@@ -106,7 +105,11 @@ def load_data_from_csv():
         "Age": 'age',
         "Tonnage": 'tonnage'
     }, inplace=True)
-    logger.info(df.head())
+
+    df[['tonnage']] = df[['tonnage']] * 1000
+    df[['length', 'passengers', 'crew', 'cabins']] = df[[
+        'length', 'passengers', 'crew', 'cabins']] * 100
+
     objects = [
         CruiseShip(**row.to_dict())
         for _, row in df.iterrows()

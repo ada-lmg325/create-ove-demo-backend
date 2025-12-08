@@ -1,67 +1,44 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCruiseShips } from "@/hooks/get-cruise-ships";
+import { FilterState } from "@/interfaces/filter";
+import { getDefaultFilterState } from "@/utils/filters";
 import { useState } from "react";
 import { CruiseLineSummary } from "./cruise-line-summary";
 import { CruiseShipTable } from "./cruise-ship-table";
 import { Filters } from "./filters";
-
 export const CruiseShipPage = () => {
-  const [filterState, setFilterState] = useState<{
-    line: string | null;
-    min_tonnage: number | null;
-    max_tonnage: number | null;
-    min_age: number | null;
-    max_age: number | null;
-    min_crew: number | null;
-    max_crew: number | null;
-    min_length: number | null;
-    max_length: number | null;
-    min_passengers: number | null;
-    max_passengers: number | null;
-    min_passenger_density: number | null;
-    max_passenger_density: number | null;
-  }>({
-    line: null,
-    min_tonnage: null,
-    max_tonnage: null,
-    min_age: null,
-    max_age: null,
-    min_crew: null,
-    max_crew: null,
-    min_length: null,
-    max_length: null,
-    min_passengers: null,
-    max_passengers: null,
-    min_passenger_density: null,
-    max_passenger_density: null,
-  });
+  const [filterState, setFilterState] = useState<FilterState>(
+    getDefaultFilterState()
+  );
 
-  const { data, loading } = getCruiseShips("/ships", filterState);
+  const { data } = getCruiseShips("/ships", filterState);
 
   return (
-    <div className="flex w-full flex-col gap-6 bg-white text-black">
+    <div className="flex w-full flex-col gap-6 bg-white p-6 text-black">
       <h1 className="text-4xl font-bold tracking-tight">Cruise Ships</h1>
-      <Filters
-        filterOptions={data?.meta?.filters}
-        filterState={filterState}
-        setFilterState={setFilterState}
-      />
-      {!loading && data ? (
-        <Tabs defaultValue="directory">
-          <TabsList>
-            <TabsTrigger value="directory">Cruise Ship Directory</TabsTrigger>
-            <TabsTrigger value="lines">Cruise Lines</TabsTrigger>
-          </TabsList>
-          <TabsContent value="directory">
-            <CruiseShipTable ships={data.ships} />
-          </TabsContent>
-          <TabsContent value="lines">
-            <CruiseLineSummary ships={data.ships} />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <span>No Data Available</span>
-      )}
+      <div className="flex w-full flex-row">
+        <div className="w-1/5 text-black">
+          <Filters
+            filterOptions={data?.meta?.filters}
+            filterState={filterState}
+            setFilterState={setFilterState}
+          />
+        </div>
+        <div className="flex-1 text-black">
+          <Tabs defaultValue="directory">
+            <TabsList>
+              <TabsTrigger value="directory">Cruise Ship Directory</TabsTrigger>
+              <TabsTrigger value="lines">Cruise Lines</TabsTrigger>
+            </TabsList>
+            <TabsContent value="directory">
+              <CruiseShipTable ships={data?.ships} />
+            </TabsContent>
+            <TabsContent value="lines">
+              <CruiseLineSummary ships={data?.ships} />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
