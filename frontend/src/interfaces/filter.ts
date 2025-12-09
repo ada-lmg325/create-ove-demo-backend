@@ -28,4 +28,6 @@ export type FilterOptions = {
   max_passengers: number;
   min_passenger_density: number;
   max_passenger_density: number;
+  min_cabins: number;
+  max_cabins: number;
 };

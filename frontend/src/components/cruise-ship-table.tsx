@@ -49,15 +49,17 @@ export function CruiseShipTable({
         <TableCaption>Cruise Ship Directory</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Line</TableHead>
-            <TableHead>Crew</TableHead>
-            <TableHead>Length (feet)</TableHead>
-            <TableHead>Cabins</TableHead>
-            <TableHead>Age (years)</TableHead>
-            <TableHead>Passenger Density (GT / Pass)</TableHead>
-            <TableHead>Passengers</TableHead>
-            <TableHead>Tonnage (GT)</TableHead>
+            <TableHead className="text-black">Name</TableHead>
+            <TableHead className="text-black">Line</TableHead>
+            <TableHead className="text-black">Crew</TableHead>
+            <TableHead className="text-black">Length (feet)</TableHead>
+            <TableHead className="text-black">Cabins</TableHead>
+            <TableHead className="text-black">Age (years)</TableHead>
+            <TableHead className="text-black">
+              Passenger Density (GT / Pass)
+            </TableHead>
+            <TableHead className="text-black">Passengers</TableHead>
+            <TableHead className="text-black">Tonnage (GT)</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
