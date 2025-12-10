@@ -4,6 +4,7 @@ import { FilterState } from "@/interfaces/filter";
 import { getDefaultFilterState } from "@/utils/filters";
 import { useState } from "react";
 import { CruiseLineSummary } from "./cruise-line-summary";
+import { CruiseLineSummaryGraph } from "./cruise-line-summary-graph";
 import { CruiseShipTable } from "./cruise-ship-table";
 import { Filters } from "./filters";
 export const CruiseShipPage = () => {
@@ -28,13 +29,22 @@ export const CruiseShipPage = () => {
           <Tabs defaultValue="directory">
             <TabsList>
               <TabsTrigger value="directory">Cruise Ship Directory</TabsTrigger>
-              <TabsTrigger value="lines">Cruise Lines</TabsTrigger>
+              <TabsTrigger value="lines">Cruise Line Data</TabsTrigger>
+              <TabsTrigger value="lines-dashboard">
+                Cruise Line Summary
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="directory">
               <CruiseShipTable ships={data?.ships} />
             </TabsContent>
             <TabsContent value="lines">
-              <CruiseLineSummary ships={data?.ships} />
+              <CruiseLineSummaryGraph ships={data?.ships} />
+            </TabsContent>
+            <TabsContent value="lines-dashboard">
+              <CruiseLineSummary
+                ships={data?.ships}
+                ranges={data?.meta?.filters}
+              />
             </TabsContent>
           </Tabs>
         </div>
