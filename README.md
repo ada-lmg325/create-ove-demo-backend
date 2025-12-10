@@ -28,74 +28,40 @@ At the startup of the application, the cruise ship data is loaded into an SQLite
 ```bash
 cd backend
 pip install uv
-uv sync --locked                   # install Python deps
+uv sync --locked
 ```
 
-### 2. Frontend
-
-```bash
-cd frontend
-pnpm install
-```
----
-
-## Environment
-
-### Backend
-
-Copy `backend/.env.template` → `backend/.env` and fill in:
+Add a .env file replacing {{PATH_TO_PROJECT}} with the path to the project on your local machine
 
 ```dotenv
-DATABASE_URL=                     # e.g. sqlite+aiosqlite:///data/main.db
-CACHE_HOST=                       # Redis host
+CACHE_HOST="localhost"
 CACHE_PORT=6379
-CACHE_PASSWORD=
-CACHE_ENABLED=true
-CACHE_EXPIRATION=60
+CACHE_EXPIRATION=3600
+CACHE_ENABLED=false
 
-DISABLE_AUTH=false
-USE_LEGACY_AUTH=false
-LEGACY_AUTH_KEY=<your-secret>
-PROTECT_METRICS=true
-METRICS_USERNAME=metrics
-METRICS_PASSWORD=<your-pass>
-TOKEN_EXPIRY=3600
+FRONTEND_ORIGIN="http://localhost:5173"
+WEBSOCKET_ORIGIN="ws://localhost:5173"
 
-FRONTEND_ORIGIN=http://localhost:5173
-WEBSOCKET_ORIGIN=ws://localhost:5173
-PORT=8000
-INTERVAL=30                       # “tick” interval (seconds)
+DATABASE_URL="sqlite+aiosqlite:///{{PATH_TO_PROJECT}}/backend/data/main.db"
+DATA_DIR="{{PATH_TO_PROJECT}}/backend/data"
+BASE_PATH="/example-project"
+PUBLIC_DIR="{{PATH_TO_PROJECT}}/backend/public"
+MODELS_DIR="{{PATH_TO_PROJECT}}/backend/models"
+TEMPLATES_DIR="{{PATH_TO_PROJECT}}/backend/templates"
+
+PORT=80
+
+DISABLE_AUTH="true"
+USE_LEGACY_AUTH=true
+LEGACY_AUTH_KEY=""
+METRICS_USERNAME="admin"
+METRICS_PASSWORD=""
+
+VITE_BACKEND="http://localhost:8000/example-project"
+VITE_SOCKET_SERVER="http://localhost:8000"
+VITE_SOCKET_PATH="/example-project/ws/socket.io"
+VITE_ENABLE_DEBUG=true
 ```
-
-### Frontend
-
-Copy `frontend/.env.template` → `frontend/.env` and adjust:
-
-```dotenv
-VITE_BACKEND=http://localhost:8000
-VITE_ENABLE_DEBUG=false           # set to true to enable in-browser debug panel
-```
-
----
-
-## Database Migrations
-
-#### SQLite (default)
-
-```bash
-cd backend
-uv run alembic upgrade head
-```
-
-#### Postgres
-
-```bash
-docker-compose up -d
-cd backend
-uv run alembic upgrade head
-```
-
----
 
 ### Run Frontend
 
@@ -107,6 +73,13 @@ pnpm run dev
 Visit `http://localhost:5173`
 
 ---
+
+### Run Backend
+```bash
+cd backend
+uv run fastapi dev app/main.py --port 8000
+```
+
 
 
 ## Project Layout
