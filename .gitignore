@@ -870,7 +870,7 @@ cython_debug/
 
 # Custom Rules
 backend/.env.production
-backend/data/*
+backend/data/main.db
 !backend/data/.gitkeep
 frontend/.env.docker
 backend/models/*
