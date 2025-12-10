@@ -1,6 +1,12 @@
-# Example Project
+# Cruise Ship Visualization
 
-A full-stack demo combining a FastAPI backend with a React/Vite frontend, featuring database migrations, caching, rate-limiting, authentication, WebSocket support, Prometheus metrics, code-generation and an in-browser debug overlay.
+A small web application used to visualize data about cruise ships. The app is constructed using a FastAPI backend and a React/Vite frontend. The app contains three top level views which allow users to access a directory of all cruise ships, a bar chart of summary statistics for all cruise lines, as well as a dashboard view of the same summary statistics. It also features am individual cruise ship summary view, where you can see information about an individual cruise ship, and where it ranks amongst all cruise ships.
+
+The philosophy around the design was to make each top level view very flexible so that the filters could be leveraged as much as possible. The views will display all of the data that is specified by the filters, allowing the user to customize what they are seeing. The individual cruise ship view was designed to show an alternative view of the data that differs from the top level views.
+
+Given that the charts are quite simple, I decided to use Recharts and ApexCharts as they provide nice out of the box solutions. For more complex data visualizations, I think that a more customizable framework such as D3.js would be appropriate.
+
+At the startup of the application, the cruise ship data is loaded into an SQLite database. While this could have been done in memory, if the dataset were to grow beyond the current number of ships this would become quite costly. 
 
 ---
 
@@ -13,6 +19,24 @@ A full-stack demo combining a FastAPI backend with a React/Vite frontend, featur
 - sqlite3 (if using SQLite) **or** Docker & Docker Compose (if using Postgres)  
 - Git  
 
+---
+
+## Setup & Install
+
+### 1. Backend
+
+```bash
+cd backend
+pip install uv
+uv sync --locked                   # install Python deps
+```
+
+### 2. Frontend
+
+```bash
+cd frontend
+pnpm install
+```
 ---
 
 ## Environment
@@ -54,25 +78,6 @@ VITE_ENABLE_DEBUG=false           # set to true to enable in-browser debug panel
 
 ---
 
-## Setup & Install
-
-### 1. Backend
-
-```bash
-cd backend
-pip install uv
-uv sync --locked                   # install Python deps
-```
-
-### 2. Frontend
-
-```bash
-cd frontend
-pnpm install
-```
-
----
-
 ## Database Migrations
 
 #### SQLite (default)
@@ -92,107 +97,6 @@ uv run alembic upgrade head
 
 ---
 
-## WebSocket API
-
-Socket.IO mounted at `/ws/socket.io` under namespace `/v1`. Supply:
-
-- `room` query param
-- valid session cookie (or `DISABLE_AUTH=true`)
-
-Client example (TS):
-
-```ts
-import {createSocketClient} from "@/api/sockets-v1";
-
-const client = createSocketClient(env.VITE_BACKEND, {
-  path: "/ws/socket.io",
-  withCredentials: true,
-  query: {room: "myroom"},
-});
-
-client.connect();
-client.onConnect(() => console.log("connected"));
-client.emitStart();
-client.onTick(payload => console.log("tick", payload));
-client.emitStop();
-client.emitReset();
-```
-
-Example events:
-
-| Event     | Direction      | Payload         | Description                          |
-|-----------|----------------|-----------------|--------------------------------------|
-| get_state | client→server  | _none_          | Ack: returns `{ status, timestamp }` |
-| start     | client→server  | _none_          | Begin periodic “tick”                |
-| stop      | client→server  | _none_          | Stop ticking                         |
-| reset     | client→server  | _none_          | Reset state & timestamp              |
-| tick      | server→clients | `{ timestamp }` | Broadcast every `INTERVAL` seconds   |
-
-### Rooms & Synchronization
-
-Each **physical Data Observatory** maps to a unique `room`. All clients — whether controllers (which emit commands) or views (read-only pages) — connect to the same room and share state in real time.
-
-1. **Controllers** connect:
-   ```ts
-   import { createSocketClient } from "@/api/sockets-v1";
-   const ctrl = createSocketClient(env.VITE_BACKEND, {
-     path: "/ws/socket.io",
-     withCredentials: true,
-     query: { room: "data-observatory" },
-   });
-   ctrl.connect();
-   // start the simulation for all viewers:
-   ctrl.emitStart();
-   // later…
-   ctrl.emitStop();
-   ctrl.emitReset();
-   ```
-
-2. **Views** connect:
-   ```ts
-   import { createSocketClient } from "@/api/sockets-v1";
-   const view = createSocketClient(env.VITE_BACKEND, {
-     path: "/ws/socket.io",
-     withCredentials: true,
-     query: { room: "data-observatory" },
-   });
-   view.connect();
-   view.emitGetState().then(state => renderState(state));
-   view.onTick(payload => renderTick(payload));
-   ```
-
-All events are scoped to `"data-observatory"`. When a controller emits `start`, every connected view in that room begins receiving `tick` broadcasts and stays in sync.
-
----
-
-## Code Generation
-
-After any backend schema or API change:
-
-```bash
-cd backend
-uv run scripts/schemas.py          # outputs JSON-Schemas & AsyncAPI
-
-cd ../frontend
-pnpm run sync                     # regenerates TS schemas, REST hooks & socket clients
-```
-
----
-
-## Development
-
-### Run Backend
-
-```bash
-cd backend
-uv run uvicorn app.main:app \
-  --reload --host 0.0.0.0 --port $PORT
-```
-
-- OpenAPI UI: `http://localhost:$PORT/docs`  
-- AsyncAPI UI: `http://localhost:$PORT/public/asyncapi.html`  
-- Metrics: `http://localhost:$PORT/metrics`  
-
 ### Run Frontend
 
 ```bash
@@ -204,44 +108,6 @@ Visit `http://localhost:5173`
 
 ---
 
-## Debug Overlay
-
-Press **Ctrl+K** (or ⌘+K) to toggle the debug panel:
-
-- Live Socket.IO events & payloads  
-- HTTP request/response log  
-- Application‐level logs  
-- Inline editing of client state (Zustand)  
-- Toast notifications for errors  
-
-Enable in production via `VITE_ENABLE_DEBUG=true`.
-
----
-
-## Production with Docker
-
-### docker-compose
-
-```bash
-docker-compose up -d
-```
-
-- `backend/.env.production` → mounted as `/.env`  
-- `backend/data` → persisted DB & Redis volume  
-
-### Manual build & run
-
-```bash
-docker build -t example-project:latest .
-docker run -d \
-  --name example-project \
-  -p 80:80 \
-  -v $(pwd)/backend/.env.production:/.env:ro \
-  -v $(pwd)/backend/data:/data \
-  example-project:latest
-```
-
----
 
 ## Project Layout
 
