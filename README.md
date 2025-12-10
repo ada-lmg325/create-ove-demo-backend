@@ -63,6 +63,13 @@ VITE_SOCKET_PATH="/example-project/ws/socket.io"
 VITE_ENABLE_DEBUG=true
 ```
 
+### 2. Frontend
+
+```bash
+cd frontend
+pnpm install
+```
+
 ### Run Frontend
 
 ```bash
